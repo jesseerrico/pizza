@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    csv (3.2.6)
     nio4r (2.5.9)
     pg (1.5.2)
     puma (6.2.2)
@@ -12,6 +13,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  csv (~> 3.2)
   pg (~> 1.5)
   puma (~> 6.2)
   rack (~> 3.0)

@@ -11,3 +11,5 @@ ruby "3.2.2"
 gem "pg", "~> 1.5"
 
 gem "sequel", "~> 5.67"
+
+gem "csv", "~> 3.2"
