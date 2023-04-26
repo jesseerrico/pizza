@@ -13,3 +13,7 @@ gem "pg", "~> 1.5"
 gem "sequel", "~> 5.67"
 
 gem "csv", "~> 3.2"
+
+gem "grape", "~> 1.7"
+
+gem "rack-cors", "~> 2.0"
