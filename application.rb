@@ -32,7 +32,7 @@ class App
             primary_key :id
             foreign_key :person_id, :people
             foreign_key :pizza_id, :pizzas
-            String :date
+            Date :date
         end
     end
   end
