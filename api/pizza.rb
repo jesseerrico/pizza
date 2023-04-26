@@ -48,6 +48,19 @@ module PizzaAnalytics
                 end
             end
 
+            # curl -X PUT -H "Content-Type: application/json" -d '{"name":"Weird Pizza"}' localhost:9292/pizza/5
+            desc "Update a pizza's name"
+            params do
+                requires :id, type: Integer, desc: "Pizza's ID"
+                requires :name, type: String, desc: "Pizza's new name"
+            end
+            route_param :id do
+                put do
+                    database[:pizzas].where(id: params[:id]).update(name: params[:name])
+                    database[:pizzas].where(id: params[:id]).first
+                end
+            end
+
             desc "Delete a pizza"
             params do
                 requires :id, type: Integer, desc: 'pizza ID'
