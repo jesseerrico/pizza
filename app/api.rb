@@ -3,5 +3,6 @@ module PizzaAnalytics
         format :json
         mount ::PizzaAnalytics::Pizza
         mount ::PizzaAnalytics::Person
+        mount ::PizzaAnalytics::Delivery
     end
 end
