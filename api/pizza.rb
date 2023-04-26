@@ -15,6 +15,11 @@ module PizzaAnalytics
                 { status: 'pizzok'}
             end
             
+            desc "See all pizzas"
+            get do
+                database[:pizzas].all
+            end
+
             desc "Find a particular pizza"
             params do
                 requires :id, type: Integer, desc: 'pizza ID'
@@ -25,8 +30,7 @@ module PizzaAnalytics
                     if(query.count == 0)
                         error!('404 Not Found', 404)
                     end
-                    result = query.first
-                    {id: params[:id], name: result[:name]}
+                    query.first
                 end
             end
 
@@ -42,6 +46,14 @@ module PizzaAnalytics
                 else
                     database[:pizzas].insert(name: params[:name])
                 end
+            end
+
+            desc "Delete a pizza"
+            params do
+                requires :id, type: Integer, desc: 'pizza ID'
+            end
+            delete ':id' do
+                database[:pizzas].where(id: params[:id]).delete
             end
         end
     end
