@@ -1,7 +1,7 @@
 require 'sequel'
 
 module PizzaAnalytics
-    class Pizza < Grape::API
+    class Person < Grape::API
         format :json
 
         helpers do
@@ -10,18 +10,18 @@ module PizzaAnalytics
             end
         end
 
-        resource :pizza do
+        resource :person do
             get :status do
-                { status: 'pizzok'}
+                { status: 'persok'}
             end
             
-            desc "Find a particular pizza"
+            desc 'Get information on a person'
             params do
-                requires :id, type: Integer, desc: 'pizza ID'
+                requires :id, type: Integer, desc: 'person ID'
             end
             route_param :id do
                 get do
-                    query = database[:pizzas].where(id: params[:id])
+                    query = database[:people].where(id: params[:id])
                     if(query.count == 0)
                         error!('404 Not Found', 404)
                     end
@@ -30,17 +30,17 @@ module PizzaAnalytics
                 end
             end
 
-            desc "Create a new pizza"
+            desc "Create a new person"
             params do
-                requires :name, type: String, desc: 'single topping on pizza'
+                requires :name, type: String, desc: "Person's name"
             end
             post do
                 # Add this pizza to the table unless it's already there
-                query = database[:pizzas].where(name: params[:name])
+                query = database[:people].where(name: params[:name])
                 if(query.count > 0)
                     return query.select(:id)
                 else
-                    database[:pizzas].insert(name: params[:name])
+                    database[:people].insert(name: params[:name])
                 end
             end
         end
