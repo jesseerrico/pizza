@@ -4,12 +4,6 @@ module PizzaAnalytics
     class Pizza < Grape::API
         format :json
 
-        helpers do
-            def database
-                @database ||= Sequel.postgres('pizzadata', :user=>'postgres',:password=>'password',:host=>'localhost',:port=>5432,:max_connections=>10)
-            end
-        end
-
         resource :pizza do
             get :status do
                 { status: 'pizzok'}
@@ -17,7 +11,7 @@ module PizzaAnalytics
             
             desc "See all pizzas"
             get do
-                database[:pizzas].all
+                PizzaAnalytics::database[:pizzas].all
             end
 
             desc "Find a particular pizza"
@@ -26,7 +20,7 @@ module PizzaAnalytics
             end
             route_param :id do
                 get do
-                    query = database[:pizzas].where(id: params[:id])
+                    query = PizzaAnalytics::database[:pizzas].where(id: params[:id])
                     if(query.count == 0)
                         error!('404 Not Found', 404)
                     end
@@ -40,11 +34,11 @@ module PizzaAnalytics
             end
             post do
                 # Add this pizza to the table unless it's already there
-                query = database[:pizzas].where(name: params[:name])
+                query = PizzaAnalytics::database[:pizzas].where(name: params[:name])
                 if(query.count > 0)
                     return query.select(:id)
                 else
-                    database[:pizzas].insert(name: params[:name])
+                    PizzaAnalytics::database[:pizzas].insert(name: params[:name])
                 end
             end
 
@@ -56,8 +50,8 @@ module PizzaAnalytics
             end
             route_param :id do
                 put do
-                    database[:pizzas].where(id: params[:id]).update(name: params[:name])
-                    database[:pizzas].where(id: params[:id]).first
+                    PizzaAnalytics::database[:pizzas].where(id: params[:id]).update(name: params[:name])
+                    PizzaAnalytics::database[:pizzas].where(id: params[:id]).first
                 end
             end
 
@@ -66,7 +60,7 @@ module PizzaAnalytics
                 requires :id, type: Integer, desc: 'pizza ID'
             end
             delete ':id' do
-                database[:pizzas].where(id: params[:id]).delete
+                PizzaAnalytics::database[:pizzas].where(id: params[:id]).delete
             end
         end
     end
