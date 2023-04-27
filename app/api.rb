@@ -4,5 +4,6 @@ module PizzaAnalytics
         mount ::PizzaAnalytics::Pizza
         mount ::PizzaAnalytics::Person
         mount ::PizzaAnalytics::Delivery
+        mount ::PizzaAnalytics::Data
     end
 end

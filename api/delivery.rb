@@ -63,7 +63,7 @@ module PizzaAnalytics
                 results = []
                 # Sort by date. That's important.
                 query = database[:deliveries].order(:date).select(:date)
-                #pizzasPerDay = Hash.new
+                
                 # You can only have a streak with at least two days
                 if(query.count > 1)
                     # First count up pizzas per day, and store them in a hash
