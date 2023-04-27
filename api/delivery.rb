@@ -24,6 +24,21 @@ module PizzaAnalytics
                 end
                 error!('404 Not Found', 404)
             end
+
+            # Given a set of results from the delivery table, this code will create a hash mapping dates to the number of pizzas eaten that day
+            def find_pizzas_per_day(deliveries)
+                pizzasPerDay = Hash.new
+                for row in deliveries do
+                    date = row[:date]
+                    if(pizzasPerDay.key?(date))
+                        pizzasPerDay[date] = pizzasPerDay[date] + 1
+                    else
+                        pizzasPerDay[date] = 1
+                    end
+                end
+
+                return pizzasPerDay
+            end
         end
 
         resource :delivery do
@@ -48,19 +63,12 @@ module PizzaAnalytics
                 results = []
                 # Sort by date. That's important.
                 query = database[:deliveries].order(:date).select(:date)
-                pizzasPerDay = Hash.new
+                #pizzasPerDay = Hash.new
                 # You can only have a streak with at least two days
                 if(query.count > 1)
                     # First count up pizzas per day, and store them in a hash
-                    for row in query do
-                        date = row[:date]
-                        if(pizzasPerDay.key?(date))
-                            pizzasPerDay[date] = pizzasPerDay[date] + 1
-                        else
-                            pizzasPerDay[date] = 1
-                        end
-                    end
-                    
+                    pizzasPerDay = find_pizzas_per_day(query)
+
                     currentStreak = []
                     currentPizzaNumber = 0
                     for date in pizzasPerDay.keys do 
@@ -82,6 +90,37 @@ module PizzaAnalytics
 
                 end
                 results
+            end
+
+            resource :month_high do
+                params do
+                    requires :month_index, type:Integer, desc: "Month number 1-12"
+                end
+                route_param :month_index do
+                    get do
+                        if params[:month_index] < 1 || params[:month_index] > 12
+                            error!('404 not found', 404)
+                        end
+                        
+                        # Find all deliveries in that month (I am interpreting this problem to include dates of that month in all years)
+                        # This requires a pure SQL query so you can call extract
+                        query = database['select * from deliveries where extract(month from date) = ?', params[:month_index]]
+                        
+                        # Find pizzas per day
+                        pizzasPerDay = find_pizzas_per_day(query)
+
+                        currentHighestPizzaNumber = 0
+                        result = ""
+                        for date in pizzasPerDay.keys do
+                            if pizzasPerDay[date] > currentHighestPizzaNumber
+                                result = date.to_s
+                                currentHighestPizzaNumber = pizzasPerDay[date]
+                            end
+                        end
+
+                        {pizzaPeakDay: result}
+                    end
+                end
             end
         end
     end
