@@ -33,7 +33,7 @@ module PizzaAnalytics
     # Helper functions, put here instead of directly into APIs so they can be more easily unit-tested
 
     def self.database
-        @database ||= Sequel.postgres('pizzadata', :user=>'postgres',:password=>'password',:host=>'localhost',:port=>5432,:max_connections=>10)
+        @database ||= Sequel.postgres('pizzadata', :user=>DB_USERNAME,:password=>DB_PASSWORD,:host=>'localhost',:port=>5432,:max_connections=>10)
     end
 
     def self.get_pizza_name(id)
