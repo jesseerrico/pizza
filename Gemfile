@@ -17,3 +17,5 @@ gem "csv", "~> 3.2"
 gem "grape", "~> 1.7"
 
 gem "rack-cors", "~> 2.0"
+
+gem "byebug", "~> 11.1"
