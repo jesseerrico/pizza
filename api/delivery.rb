@@ -32,7 +32,7 @@ module PizzaAnalytics
                 end
                 route_param :month_index do
                     get do
-                        PizzaAnalytics::month_high(params[:month_index])
+                        PizzaAnalytics::App::month_high(params[:month_index])
                     end
                 end
             end

@@ -26,6 +26,32 @@ module PizzaAnalytics
 
             response
         end
+
+        def self.month_high(month_index)
+            if month_index < 1 || month_index > 12
+                raise "Month " + month_index.to_s + " doesn't exist"
+            end
+
+            # A two-digit string representation is necessary for SQL reasons
+            month_index_string = format('%02d', month_index)
+            
+            # Find all deliveries in that month (I am interpreting this problem to include dates of that month in all years)
+            query = PizzaAnalytics::database["select strftime('%m', date) as monthIndex, date from deliveries where monthIndex = ?", month_index_string]
+            
+            # Find pizzas per day
+            pizzasPerDay = PizzaAnalytics::find_pizzas_per_day(query)
+    
+            currentHighestPizzaNumber = 0
+            result = ""
+            for date in pizzasPerDay.keys do
+                if pizzasPerDay[date] > currentHighestPizzaNumber
+                    result = date.to_s
+                    currentHighestPizzaNumber = pizzasPerDay[date]
+                end
+            end
+    
+            {pizzaPeakDay: result}
+        end
     end
 
     # Helper functions, put here instead of directly into APIs so they can be more easily unit-tested
@@ -59,8 +85,6 @@ module PizzaAnalytics
         output = ""
         table = CSV.parse(File.read("data.csv"), headers: true)
 
-        # Drop and recreate delivery table to start it from scratch (for testing purposes)
-        # PizzaAnalytics::database.drop_table?(:deliveries)
         PizzaAnalytics::database.create_table? :deliveries do
             primary_key :id
             foreign_key :person_id, :people
@@ -79,7 +103,6 @@ module PizzaAnalytics
             PizzaAnalytics::database[:deliveries].insert(person_id: person_id, pizza_id: pizza_id, date: row["date"])
         end
     end
-
 
     # Returns the ID of a pizza by name if it exists; creates it and returns that ID otherwise
     def self.get_pizza_id(name)
@@ -163,29 +186,5 @@ module PizzaAnalytics
 
         end
         results
-    end
-
-    def self.month_high(month_index)
-        if month_index < 1 || month_index > 12
-            raise "Month " + month_index.to_s + " doesn't exist"
-        end
-        
-        # Find all deliveries in that month (I am interpreting this problem to include dates of that month in all years)
-        # This requires a pure SQL query so you can call extract
-        query = PizzaAnalytics::database['select * from deliveries where extract(month from date) = ?', month_index]
-        
-        # Find pizzas per day
-        pizzasPerDay = PizzaAnalytics::find_pizzas_per_day(query)
-
-        currentHighestPizzaNumber = 0
-        result = ""
-        for date in pizzasPerDay.keys do
-            if pizzasPerDay[date] > currentHighestPizzaNumber
-                result = date.to_s
-                currentHighestPizzaNumber = pizzasPerDay[date]
-            end
-        end
-
-        {pizzaPeakDay: result}
     end
 end

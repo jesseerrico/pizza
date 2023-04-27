@@ -20,3 +20,5 @@ gem "rack-cors", "~> 2.0"
 gem "byebug", "~> 11.1"
 
 gem "sqlite3", "~> 1.6"
+
+gem "rspec", "~> 3.12"
