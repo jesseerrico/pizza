@@ -39,7 +39,6 @@ GEM
     mustermann-grape (1.0.2)
       mustermann (>= 1.0.0)
     nio4r (2.5.9)
-    pg (1.5.2)
     puma (6.2.2)
       nio4r (~> 2.0)
     rack (3.0.7)
@@ -49,6 +48,7 @@ GEM
       rack (>= 2.0.0)
     ruby2_keywords (0.0.5)
     sequel (5.67.0)
+    sqlite3 (1.6.2-x86_64-linux)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     zeitwerk (2.6.7)
@@ -60,11 +60,11 @@ DEPENDENCIES
   byebug (~> 11.1)
   csv (~> 3.2)
   grape (~> 1.7)
-  pg (~> 1.5)
   puma (~> 6.2)
   rack (~> 3.0)
   rack-cors (~> 2.0)
   sequel (~> 5.67)
+  sqlite3 (~> 1.6)
 
 RUBY VERSION
    ruby 3.2.2p53

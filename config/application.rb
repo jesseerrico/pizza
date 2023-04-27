@@ -12,3 +12,5 @@ end
 
 require 'api'
 require 'pizza_app'
+
+PizzaAnalytics::add_seed_data_from_file
