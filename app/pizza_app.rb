@@ -26,32 +26,6 @@ module PizzaAnalytics
 
             response
         end
-
-        def self.month_high(month_index)
-            if month_index < 1 || month_index > 12
-                raise "Month " + month_index.to_s + " doesn't exist"
-            end
-
-            # A two-digit string representation is necessary for SQL reasons
-            month_index_string = format('%02d', month_index)
-            
-            # Find all deliveries in that month (I am interpreting this problem to include dates of that month in all years)
-            query = PizzaAnalytics::database["select strftime('%m', date) as monthIndex, date from deliveries where monthIndex = ?", month_index_string]
-            
-            # Find pizzas per day
-            pizzasPerDay = PizzaAnalytics::find_pizzas_per_day(query)
-    
-            currentHighestPizzaNumber = 0
-            result = ""
-            for date in pizzasPerDay.keys do
-                if pizzasPerDay[date] > currentHighestPizzaNumber
-                    result = date.to_s
-                    currentHighestPizzaNumber = pizzasPerDay[date]
-                end
-            end
-    
-            {pizzaPeakDay: result}
-        end
     end
 
     # Helper functions, put here instead of directly into APIs so they can be more easily unit-tested
@@ -153,38 +127,5 @@ module PizzaAnalytics
         end
 
         return pizzasPerDay
-    end
-
-    def self.find_streaks
-        results = []
-        # Sort by date. That's important.
-        query = PizzaAnalytics::database[:deliveries].order(:date).select(:date)
-        
-        # You can only have a streak with at least two days
-        if(query.count > 1)
-            # First count up pizzas per day, and store them in a hash
-            pizzasPerDay = PizzaAnalytics::find_pizzas_per_day(query)
-
-            currentStreak = []
-            currentPizzaNumber = 0
-            for date in pizzasPerDay.keys do 
-                # If the number for this date is not higher than the current number, the streak is over.
-                if pizzasPerDay[date] <= currentPizzaNumber
-                    # If it's longer than one day, add it to the results.
-                    if (currentStreak.length > 1)
-                        results.push(currentStreak)
-                    end
-
-                    # Start the streak over
-                    currentStreak = []
-                end
-
-                # Store the current pizza number and add today to the streak
-                currentStreak.push(date)
-                currentPizzaNumber = pizzasPerDay[date]
-            end
-
-        end
-        results
     end
 end

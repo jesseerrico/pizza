@@ -23,7 +23,11 @@ module PizzaAnalytics
 
             desc "Find all streaks of increased pizza consumption"
             get :find_streaks do
-                PizzaAnalytics::find_streaks
+                
+                # Do database stuff here so that data can be fed into the algorithm for unit tests
+                # Sort by date. That's important.
+                query = PizzaAnalytics::database[:deliveries].order(:date).select(:date)
+                PizzaAlgorithmContainer.new.find_streaks(query.to_a)
             end
 
             resource :month_high do
@@ -32,7 +36,16 @@ module PizzaAnalytics
                 end
                 route_param :month_index do
                     get do
-                        PizzaAnalytics::App::month_high(params[:month_index])
+                        month_index = params[:month_index]
+                        if month_index < 1 || month_index > 12
+                            raise "Month " + month_index.to_s + " doesn't exist"
+                        end
+
+                        # Do database stuff here so that data can be fed into the algorithm for unit tests
+                        # A two-digit string representation is necessary for SQL reasons
+                        month_index_string = format('%02d', month_index)
+                        query = PizzaAnalytics::database["select strftime('%m', date) as monthIndex, date from deliveries where monthIndex = ?", month_index_string]
+                        PizzaAlgorithmContainer.new.month_high(query.to_a)
                     end
                 end
             end
