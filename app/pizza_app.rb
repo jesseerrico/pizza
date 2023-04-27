@@ -28,7 +28,7 @@ module PizzaAnalytics
         end
     end
 
-    # Helper functions, put here instead of directly into APIs so they can be more easily unit-tested
+    # Database functions stored here as well
 
     def self.database
        @database ||= Sequel.sqlite
@@ -112,20 +112,5 @@ module PizzaAnalytics
             return query.first[:name]
         end
         raise "Person not found"
-    end
-
-    # Given a set of results from the delivery table, this code will create a hash mapping dates to the number of pizzas eaten that day
-    def self.find_pizzas_per_day(deliveries)
-        pizzasPerDay = Hash.new
-        for row in deliveries do
-            date = row[:date]
-            if(pizzasPerDay.key?(date))
-                pizzasPerDay[date] = pizzasPerDay[date] + 1
-            else
-                pizzasPerDay[date] = 1
-            end
-        end
-
-        return pizzasPerDay
     end
 end
