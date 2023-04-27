@@ -59,23 +59,20 @@ module PizzaAnalytics
         output = ""
         table = CSV.parse(File.read("data.csv"), headers: true)
 
-        PizzaAnalytics::database.create_table? :deliveries do
-            primary_key :id
-            foreign_key :person_id, :people
-            foreign_key :pizza_id, :pizzas
-            Date :date
-        end
-
         for row in table do
-            # Add person to people table if necessary, get ID
-            person_id = get_person_id(row["person"])
-
-            # Add pizza to pizza table if necessary, get ID
-            pizza_id = get_pizza_id(row["meat-type"])
-
-            # Add delivery to delivery table
-            PizzaAnalytics::database[:deliveries].insert(person_id: person_id, pizza_id: pizza_id, date: row["date"])
+            record_delivery(row["person"], row["meat-type"], row["date"])
         end
+    end
+
+    def self.record_delivery(person_name, pizza_name, date)
+        # Add person to people table if necessary, get ID
+        person_id = get_person_id(person_name)
+
+        # Add pizza to pizza table if necessary, get ID
+        pizza_id = get_pizza_id(pizza_name)
+
+        # Add delivery to delivery table
+        PizzaAnalytics::database[:deliveries].insert(person_id: person_id, pizza_id: pizza_id, date: date)
     end
 
     # Returns the ID of a pizza by name if it exists; creates it and returns that ID otherwise

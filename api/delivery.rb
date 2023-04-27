@@ -21,6 +21,17 @@ module PizzaAnalytics
                 results
             end
 
+            desc "Record a new delivery (or consumption)"
+            params do
+                requires :person_name, type: String, desc: 'Name of person'
+                requires :pizza_name, type: String, desc: 'Kind of pizza they ate'
+                requires :date, type: String, desc: "When they ate the pizza"
+            end
+            post do
+                # Add the delivery, adding the person and pizza if necessary
+                PizzaAnalytics::record_delivery(params[:person_name], params[:pizza_name], params[:date])
+            end
+
             desc "Find all streaks of increased pizza consumption"
             get :find_streaks do
                 
